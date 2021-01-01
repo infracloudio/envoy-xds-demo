@@ -1,0 +1,75 @@
+admin:
+  access_log_path: /dev/null
+  address:
+    socket_address:
+      address: 127.0.0.1
+      port_value: 9000
+
+node:
+  cluster: service_greeter
+  id: test-id
+
+static_resources:
+  listeners:
+  - name: listener_0
+    address:
+      socket_address: { address: 0.0.0.0, port_value: 10000 }
+    filter_chains:
+    - filters:
+      - name: envoy.http_connection_manager
+        config:
+          stat_prefix: ingress_http
+          codec_type: AUTO
+          route_config:
+            name: local_route
+            virtual_hosts:
+            - name: local_service
+              domains: ["*"]
+              routes:
+              - match: { prefix: "/" }
+                route: { host_rewrite: www.bbc.com, cluster: service_bbc, prefix_rewrite: "/robots.txt" }
+          http_filters:
+          - name: envoy.router
+      tls_context:
+        common_tls_context:
+          tls_certificate_sds_secret_configs:
+          - name: server_cert
+
+  clusters:
+  - name: service_bbc
+    connect_timeout: 2s
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: service_bbc
+      endpoints:
+      - lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: www.bbc.com
+                port_value: 443
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.api.v2.auth.UpstreamTlsContext
+
+  # static secrets
+  secrets:
+  - name: server_cert
+    tls_certificate:
+      certificate_chain:
+        filename: certs/envoy-proxy-server.crt
+      private_key:
+        filename: certs/envoy-proxy-server.key
+  - name: client_cert
+    tls_certificate:
+      certificate_chain:
+        filename: certs/envoy-proxy-client.crt
+      private_key:
+        filename: client.key
+  - name: validation_context
+    validation_context:
+      trusted_ca:
+        filename: certs/envoy-intermediate-and-envoy-root-ca-chain.crt

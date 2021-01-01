@@ -1,0 +1,14 @@
+{
+  "accounts": [
+    {
+      "id": 1,
+      "name": "Divit Bagul",
+      "bank": "ICICI"
+    },
+    {
+      "id": 2,
+      "name": "Aryan Bagul",
+      "bank": "HDFC"
+    }
+  ]
+}
