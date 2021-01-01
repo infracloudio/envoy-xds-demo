@@ -27,7 +27,7 @@ static_resources:
               domains: ["*"]
               routes:
               - match: { prefix: "/" }
-                route: { host_rewrite: www.bbc.com, cluster: service_bbc, prefix_rewrite: "/robots.txt" }
+                route: { host_rewrite: www.linkedin.com, cluster: service_linkedin, prefix_rewrite: "/robots.txt" }
           http_filters:
           - name: envoy.router
       tls_context:
@@ -36,7 +36,7 @@ static_resources:
           - name: server_cert
 
   clusters:
-  - name: service_bbc
+  - name: service_linkedin
     connect_timeout: 2s
     type: LOGICAL_DNS
     dns_lookup_family: V4_ONLY
@@ -48,7 +48,7 @@ static_resources:
         - endpoint:
             address:
               socket_address:
-                address: www.bbc.com
+                address: www.linkedin.com
                 port_value: 443
     transport_socket:
       name: envoy.transport_sockets.tls
