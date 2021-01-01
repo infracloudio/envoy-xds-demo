@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	auth "github.com/envoyproxy/go-control-plane/envoy/extensions/transport_sockets/tls/v3"
-	"github.com/mahendrabagul/envoy-control-plane-demo/src/domainsreader"
+	"github.com/mahendrabagul/envoy-xds-demo/src/domainsreader"
 	"io/ioutil"
 	"net"
 	"os"
