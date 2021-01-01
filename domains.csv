@@ -1,3 +1,2 @@
 domain_name,port,route
 "192.168.1.14","10002","/profiles"
-"192.168.1.14","10003","/posts"
