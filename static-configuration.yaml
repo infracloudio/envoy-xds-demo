@@ -26,14 +26,16 @@ static_resources:
             - name: local_service
               domains: ["*"]
               routes:
-              - match: { prefix: "/" }
+              - match: { prefix: "/linkedin" }
                 route: { host_rewrite: www.linkedin.com, cluster: service_linkedin, prefix_rewrite: "/robots.txt" }
+              - match: { prefix: "/google" }
+                route: { host_rewrite: www.google.com, cluster: service_google, prefix_rewrite: "/robots.txt" }
           http_filters:
           - name: envoy.router
-      tls_context:
-        common_tls_context:
-          tls_certificate_sds_secret_configs:
-          - name: server_cert
+#      tls_context:
+#        common_tls_context:
+#          tls_certificate_sds_secret_configs:
+#          - name: server_cert
 
   clusters:
   - name: service_linkedin
@@ -54,22 +56,40 @@ static_resources:
       name: envoy.transport_sockets.tls
       typed_config:
         "@type": type.googleapis.com/envoy.api.v2.auth.UpstreamTlsContext
+  - name: service_google
+    connect_timeout: 2s
+    type: LOGICAL_DNS
+    dns_lookup_family: V4_ONLY
+    lb_policy: ROUND_ROBIN
+    load_assignment:
+      cluster_name: service_bbc
+      endpoints:
+        - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: www.google.com
+                    port_value: 443
+    transport_socket:
+      name: envoy.transport_sockets.tls
+      typed_config:
+        "@type": type.googleapis.com/envoy.api.v2.auth.UpstreamTlsContext
 
   # static secrets
-  secrets:
-  - name: server_cert
-    tls_certificate:
-      certificate_chain:
-        filename: certs/envoy-proxy-server.crt
-      private_key:
-        filename: certs/envoy-proxy-server.key
-  - name: client_cert
-    tls_certificate:
-      certificate_chain:
-        filename: certs/envoy-proxy-client.crt
-      private_key:
-        filename: client.key
-  - name: validation_context
-    validation_context:
-      trusted_ca:
-        filename: certs/envoy-intermediate-and-envoy-root-ca-chain.crt
+#  secrets:
+#  - name: server_cert
+#    tls_certificate:
+#      certificate_chain:
+#        filename: certs/envoy-proxy-server.crt
+#      private_key:
+#        filename: certs/envoy-proxy-server.key
+#  - name: client_cert
+#    tls_certificate:
+#      certificate_chain:
+#        filename: certs/envoy-proxy-client.crt
+#      private_key:
+#        filename: client.key
+#  - name: validation_context
+#    validation_context:
+#      trusted_ca:
+#        filename: certs/envoy-intermediate-and-envoy-root-ca-chain.crt
