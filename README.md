@@ -39,7 +39,7 @@ Then invoke
 ```bash
 curl  -H "Host: router.mahendrabagul.io" \
    --resolve  router.mahendrabagul.io:10000:127.0.0.1 \
-   --cacert certs/envoy-intermediate-and-envoy-root-ca-chain.crt https://router.mahendrabagul.io:10000/
+   --cacert certs/envoy-intermediate-and-envoy-root-ca-chain.crt https://router.mahendrabagul.io:10000/profiles
 ```
 
 ### Check dynamic configuration is being applied to envoy or not.
@@ -50,6 +50,12 @@ json-server --watch sample_servers/posts.json --host 192.168.1.14 --port 10003
 update the ip and port in domains.csv present in root of the project like below.
 
 ```
-"192.168.1.14","10002","/profiles"
+"192.168.1.14","10003","/posts"
 ```
 When you will do this, the next iteration will pick up this change and push it to envoy. You will be able to access /posts api from envoy's ip and port.
+
+```bash
+curl  -H "Host: router.mahendrabagul.io" \
+   --resolve  router.mahendrabagul.io:10000:127.0.0.1 \
+   --cacert certs/envoy-intermediate-and-envoy-root-ca-chain.crt https://router.mahendrabagul.io:10000/posts
+```
